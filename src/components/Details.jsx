@@ -1,11 +1,14 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { useEffect } from "react";
 const Details = () => {
   const params = useParams();
+const navigate=useNavigate()
+  const [film, setFilm] = useState(null);
 
   const getFilm = () => {
-    fetch("http://www.omdbapi.com/?apikey=76052b01&s=" + params.imdbID)
+    fetch("http://www.omdbapi.com/?apikey=76052b01&i=" + params.filmId)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -13,8 +16,9 @@ const Details = () => {
           throw new Error("errore nel recupero del film ");
         }
       })
-      .then((film) => {
-        console.log("film", film);
+      .then((filmtrovato) => {
+        console.log("film", filmtrovato);
+        setFilm(filmtrovato);
       })
       .catch((err) => {
         console.log(err);
@@ -24,25 +28,30 @@ const Details = () => {
     getFilm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  
   return (
-    <Container>
+
+    
+        film && (
+             <Container>
       <Row className=" justify-content-center">
         <Col sm={12} md={6} lg={4} xl={4} className=" my-5">
           <Card>
-            <Card.Img variant="top" src="https://placecats.com/300/200" />
+            <Card.Img variant="top" src={film.Poster} />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>{film.Title}</Card.Title>
               <Card.Text>
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                {film.Plot}
               </Card.Text>
-              <Button variant="primary">Go somewhere</Button>
+              <Button onClick={()=>{navigate("/") }}  variant="primary">Torna in home</Button>
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </Container>
+        )
+    
+   
   );
 };
 export default Details;
